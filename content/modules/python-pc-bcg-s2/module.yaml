@@ -1,0 +1,101 @@
+intitule: Algorithmique et Programmation en Python
+filiere: Tronc commun Chimie (PC-BCG)
+semestre: S2
+nature: Disciplinaire
+credits: 4
+code: # TODO le descriptif ne porte pas de code de module
+etablissement: # TODO établissement exact (Université Abdelmalek Essaâdi)
+
+descriptif:
+  version: "2023-2024"
+  source: descriptif PC BCG 2023-2024.pdf
+  drive_id: 1M_s2FeaoYLnPjJRJJr8DiI7rWFyCxNrT
+  derniere_modification: 2024-01-28
+  # Version la plus récente trouvée dans le Drive. À confronter à
+  # l'accréditation en vigueur avant toute publication.
+  statut: a_confirmer
+
+objectifs:
+  - Enseigner les concepts fondamentaux de l'algorithmique et de la programmation
+    à travers le langage Python (variables, fonctions, boucles, conditions), puis
+    les structures de données et les algorithmes de tri et de recherche.
+  - Donner les connaissances de base pour écrire des programmes simples et
+    résoudre des problèmes plus complexes à l'aide d'algorithmes et de structures
+    de données.
+  - Permettre aux étudiants d'analyser leurs données, d'extraire des indicateurs
+    à partir des résultats d'expériences et de réaliser des études statistiques.
+
+prerequis:
+  - Connaissance de base en informatique et architecture des ordinateurs
+  - Connaissances dans le domaine des IT skills
+
+competences:
+  - Concevoir des algorithmes de base
+  - Concevoir des programmes simples
+  - Analyser et résoudre des problèmes
+
+volume_horaire:
+  cours: 23
+  td: 6
+  tp: 14
+  activites_pratiques: 2
+
+# Le descriptif impose deux natures d'épreuve : un QCM théorique et une
+# épreuve pratique sur machine. Le moteur de correction gère les deux.
+evaluation:
+  - type: examen_final
+    ponderation: 0.7
+    formes:
+      - Examen théorique (QCM)
+      - Examen pratique (sur machine)
+  - type: controle_continu
+    ponderation: 0.3
+    formes:
+      - Rendus
+      - Quizz
+      - Achèvement des activités sur la plateforme
+
+parties:
+  - titre: Algorithmique
+    elements:
+      - id: algo-1
+        titre: Structure d'un algorithme
+      - id: algo-2
+        titre: Variables (déclaration, manipulation, opérations)
+      - id: algo-3
+        titre: Fonctions de lecture et d'écriture
+      - id: algo-4
+        titre: Structures conditionnelles (tests simples et alternatifs)
+      - id: algo-5
+        titre: Boucles (for, while, case)
+      - id: algo-6
+        titre: Tableaux (1D, 2D, recherche, tri)
+      - id: algo-7
+        titre: Fonctions et procédures (structure, appel)
+      - id: algo-8
+        titre: Passage de paramètres (par valeur, par adresse)
+
+  - titre: Python
+    elements:
+      - id: py-1
+        titre: Introduction à Python (concepts, IDE, installation, configuration)
+      - id: py-2
+        titre: Variables (déclaration, manipulation, opérations)
+      - id: py-3
+        titre: Fonctions de lecture et d'écriture
+      - id: py-4
+        titre: Listes et tuples (déclaration, parcours, opérations)
+      - id: py-5
+        titre: Dictionnaires de données
+      - id: py-6
+        titre: Tests (conditions)
+      - id: py-7
+        titre: Boucles (for, while)
+      - id: py-8
+        titre: Modules et packages (importer, utiliser les fonctions)
+      - id: py-9
+        titre: Fonctions et procédures (syntaxe, appel)
+      - id: py-10
+        titre: Fichiers (modes d'ouverture, parcours, manipulation)
+      - id: py-11
+        titre: Extraction Web

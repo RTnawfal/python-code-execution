@@ -13,8 +13,17 @@ EXERCICE = {
     ],
 }
 
+QCM = {
+    "type": "qcm",
+    "bareme": 2,
+    "questions": [
+        {"enonce": "Type de 7 / 2 ?", "propositions": ["int", "float"], "reponse": 1},
+        {"enonce": "Structures mutables ?", "propositions": ["liste", "tuple", "dict"], "reponse": [0, 2]},
+    ],
+}
 
-class TestCorriger(unittest.TestCase):
+
+class TestCorrigerCode(unittest.TestCase):
     def test_solution_correcte(self):
         correction = corriger(EXERCICE, "def moyenne(n):\n    return sum(n) / len(n) if n else 0\n")
         self.assertTrue(correction.reussi)
@@ -39,6 +48,26 @@ class TestCorriger(unittest.TestCase):
         exercice = {"bareme": 1, "tests": [{"appel": "f()", "attendu": 0.1, "tolerance": 0.001}]}
         self.assertTrue(corriger(exercice, "def f():\n    return 0.1000001\n").reussi)
         self.assertFalse(corriger(exercice, "def f():\n    return 0.2\n").reussi)
+
+
+class TestCorrigerQcm(unittest.TestCase):
+    def test_toutes_bonnes_reponses(self):
+        correction = corriger(QCM, [1, [0, 2]])
+        self.assertTrue(correction.reussi)
+        self.assertEqual(correction.note, 2)
+
+    def test_reponse_multiple_incomplete(self):
+        correction = corriger(QCM, [1, [0]])
+        self.assertFalse(correction.reussi)
+        self.assertEqual(correction.note, 1)
+
+    def test_ordre_des_choix_sans_importance(self):
+        self.assertTrue(corriger(QCM, [1, [2, 0]]).reussi)
+
+    def test_reponses_manquantes(self):
+        correction = corriger(QCM, [])
+        self.assertFalse(correction.reussi)
+        self.assertEqual(correction.note, 0)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,61 @@
+id: PYBCG-S2-TP1-EX1
+module: python-pc-bcg-s2
+element: py-4
+type: tp
+statut: brouillon # exercice original, à valider pédagogiquement par l'enseignant
+difficulte: 2
+duree_min: 20
+bareme: 6
+
+enonce: |
+  Le descriptif du module prévoit la recherche dans un tableau.
+
+  Écrire une fonction `indice(valeur, tableau)` qui renvoie l'indice de la
+  première occurrence de `valeur` dans `tableau`, et -1 si la valeur ne s'y
+  trouve pas.
+
+  Vous devez écrire la recherche vous-même, sans utiliser la méthode index().
+
+  Exemple : indice(3, [5, 3, 8, 3]) vaut 1.
+
+squelette: |
+  def indice(valeur, tableau):
+      ...
+
+solution: |
+  def indice(valeur, tableau):
+      for i in range(len(tableau)):
+          if tableau[i] == valeur:
+              return i
+      return -1
+
+tests:
+  - appel: "indice(3, [5, 3, 8, 3])"
+    attendu: 1
+  - appel: "indice(5, [5, 3, 8])"
+    attendu: 0
+  - appel: "indice(8, [5, 3, 8])"
+    attendu: 2
+  - appel: "indice(9, [5, 3, 8])"
+    attendu: -1
+  - appel: "indice(1, [])"
+    attendu: -1
+
+indices:
+  - range(len(tableau)) donne les indices valides du tableau.
+  - "return interrompt la fonction dès qu'on a trouvé : inutile de continuer."
+
+corrige:
+  - Parcourir les indices du tableau avec range(len(tableau)).
+  - Comparer tableau[i] à la valeur cherchée ; dès l'égalité, renvoyer i.
+  - >
+    Le return -1 se place après la boucle, pas dans le else du if : sinon la
+    fonction s'arrêterait dès la première case différente au lieu de continuer
+    la recherche.
+  - Sur un tableau vide, la boucle ne s'exécute pas et la fonction renvoie -1.
+
+erreurs_frequentes:
+  - symptome: IndexError
+    message: L'indice dépasse la taille du tableau. Utilisez range(len(tableau)).
+  - symptome: TypeError
+    message: "Vérifiez l'ordre des paramètres : d'abord la valeur, puis le tableau."

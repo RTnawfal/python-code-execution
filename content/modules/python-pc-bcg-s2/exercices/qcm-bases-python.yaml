@@ -1,0 +1,36 @@
+id: PYBCG-S2-QCM1
+module: python-pc-bcg-s2
+element: py-2
+type: qcm
+statut: brouillon # exercice original, à valider pédagogiquement par l'enseignant
+difficulte: 1
+duree_min: 5
+bareme: 4
+
+questions:
+  - enonce: De quel type est le résultat de 7 / 2 en Python 3 ?
+    propositions: ["int", "float", "str"]
+    reponse: 1
+    explication: >
+      L'opérateur / effectue toujours une division décimale et renvoie un float,
+      même quand les deux opérandes sont entiers. Pour obtenir un entier, on
+      utilise la division entière //.
+
+  - enonce: Que vaut 7 // 2 ?
+    propositions: ["3", "3.5", "4"]
+    reponse: 0
+    explication: >
+      // est la division entière : elle tronque vers le bas. 7 // 2 vaut donc 3.
+
+  - enonce: Parmi ces structures, lesquelles sont modifiables après création ?
+    propositions: ["la liste", "le tuple", "le dictionnaire"]
+    reponse: [0, 2]
+    explication: >
+      Listes et dictionnaires sont mutables : on peut y ajouter, retirer ou
+      remplacer des éléments. Le tuple est immuable, il faut en recréer un autre.
+
+  - enonce: Que vaut len("Python") ?
+    propositions: ["5", "6", "7"]
+    reponse: 1
+    explication: >
+      len renvoie le nombre de caractères de la chaîne : P-y-t-h-o-n, soit 6.

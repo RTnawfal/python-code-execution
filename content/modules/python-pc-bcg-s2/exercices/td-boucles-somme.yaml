@@ -1,0 +1,55 @@
+id: PYBCG-S2-TD1-EX1
+module: python-pc-bcg-s2
+element: py-7
+type: td
+statut: brouillon # exercice original, à valider pédagogiquement par l'enseignant
+difficulte: 1
+duree_min: 10
+bareme: 4
+
+enonce: |
+  Écrire une fonction `somme(n)` qui renvoie la somme des entiers de 1 à n,
+  c'est-à-dire 1 + 2 + ... + n. Si n est négatif ou nul, la fonction renvoie 0.
+
+  Exemple : somme(5) vaut 15.
+
+squelette: |
+  def somme(n):
+      ...
+
+solution: |
+  def somme(n):
+      total = 0
+      for i in range(1, n + 1):
+          total += i
+      return total
+
+tests:
+  - appel: "somme(5)"
+    attendu: 15
+  - appel: "somme(1)"
+    attendu: 1
+  - appel: "somme(0)"
+    attendu: 0
+  - appel: "somme(-3)"
+    attendu: 0
+  - appel: "somme(100)"
+    attendu: 5050
+
+indices:
+  - range(1, n + 1) parcourt les entiers de 1 jusqu'à n inclus.
+  - Pensez à initialiser le total à 0 avant la boucle.
+
+corrige:
+  - Initialiser un accumulateur `total` à 0 avant d'entrer dans la boucle.
+  - Parcourir les entiers de 1 à n avec range(1, n + 1), et ajouter chacun au total.
+  - >
+    Quand n est négatif ou nul, range est vide : la boucle ne s'exécute pas et la
+    fonction renvoie 0, ce qui est le comportement demandé. Aucun test spécial
+    n'est nécessaire.
+
+erreurs_frequentes:
+  - symptome: NameError
+    message: L'accumulateur doit être initialisé avant la boucle, pas à l'intérieur.
+  - symptome: TypeError
+    message: Vérifiez que la fonction renvoie bien un nombre et non None.
