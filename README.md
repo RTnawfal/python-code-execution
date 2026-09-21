@@ -33,6 +33,26 @@ content/modules/<module>/
 un vrai module. Les champs `# TODO` attendent les valeurs exactes du
 descriptif accrédité.
 
+## Moteur de correction
+
+`engine/corrector.py` exécute le code de l'étudiant contre les tests de
+l'exercice et renvoie une note, le détail par test, et un message ciblé
+lorsque l'erreur figure dans `erreurs_frequentes`. Il n'utilise que la
+bibliothèque standard, donc le même fichier tournera dans l'application via
+Pyodide, hors ligne.
+
+`engine/valider.py` vérifie que le corrigé de référence de chaque exercice
+passe ses propres tests. À lancer avant toute publication de contenu :
+
+```
+python3 -m engine.valider content/
+python3 -m unittest discover -p 'test_*.py'
+```
+
+Limite connue : une boucle infinie dans le code de l'étudiant bloque
+l'exécution. Il faudra une interruption côté application (exécution de
+Pyodide dans un *web worker*) avant la mise entre les mains d'étudiants.
+
 ## Ce qui manque pour avancer
 
 Un module réel et complet : descriptif officiel, deux ou trois TD corrigés,
