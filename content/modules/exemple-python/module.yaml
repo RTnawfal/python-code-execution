@@ -1,0 +1,59 @@
+# Fiche module — structure calquée sur le descriptif officiel accrédité.
+# Ceci est un EXEMPLE à remplacer par un vrai module. Les champs marqués
+# "# TODO" attendent la valeur exacte du descriptif.
+
+code: SMI-S4-M22 # TODO code officiel du module
+intitule: Programmation Python
+filiere: SMI
+semestre: S4
+etablissement: # TODO université / faculté
+
+# Le millésime du descriptif : c'est lui qui distingue une version
+# récemment accréditée d'une ancienne encore en circulation.
+descriptif:
+  version: "2023"
+  date_validation: 2023-07-15 # TODO
+  source: accreditation-2023.pdf
+
+volume_horaire:
+  cours: 20
+  td: 14
+  tp: 16
+  travail_personnel: 10
+
+prerequis:
+  - Algorithmique I (S1)
+
+objectifs:
+  - Écrire et exécuter un programme Python structuré
+  - Manipuler les types de base et les structures de données usuelles
+  - Décomposer un problème en fonctions
+
+# Pondération utilisée par l'application pour calculer une note simulée
+# et pour signaler à l'étudiant ce qui pèse le plus dans la validation.
+evaluation:
+  - type: controle
+    ponderation: 0.4
+  - type: examen
+    ponderation: 0.6
+
+# Éléments de module = le découpage officiel en chapitres.
+# Une capsule vidéo par chapitre, hébergée sur YouTube (référencée par son
+# identifiant, jamais par un fichier vidéo dans le dépôt).
+elements:
+  - id: ch1
+    titre: Variables, types et expressions
+    objectifs:
+      - Distinguer les types numériques et les chaînes
+      - Évaluer une expression et comprendre les conversions
+    capsule:
+      youtube_id: # TODO
+      duree_min: 12
+
+  - id: ch2
+    titre: Structures de contrôle
+    objectifs:
+      - Écrire des conditions et des boucles
+    capsule:
+      youtube_id: # TODO
+      duree_min: 15

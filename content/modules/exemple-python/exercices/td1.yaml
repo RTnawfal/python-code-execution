@@ -1,0 +1,55 @@
+# Un exercice = un énoncé, des tests exécutables par la machine, et un
+# corrigé rédigé pour l'étudiant. Les deux derniers sont volontairement
+# séparés : les tests servent à la correction automatique hors ligne,
+# le corrigé à l'explication.
+
+id: SMI-S4-M22-TD1-EX1
+module: SMI-S4-M22
+chapitre: ch1
+type: td # td | tp | examen | qcm
+difficulte: 1 # 1 à 5
+duree_min: 10
+bareme: 4
+
+enonce: |
+  Écrire une fonction `moyenne(notes)` qui reçoit une liste de notes
+  et renvoie leur moyenne arithmétique. La fonction renvoie 0 si la
+  liste est vide.
+
+# Code pré-rempli dans l'éditeur de l'application.
+squelette: |
+  def moyenne(notes):
+      ...
+
+solution: |
+  def moyenne(notes):
+      if not notes:
+          return 0
+      return sum(notes) / len(notes)
+
+# Correction automatique : chaque cas est exécuté dans l'interpréteur
+# embarqué. `tolerance` gère la comparaison des flottants.
+tests:
+  - appel: "moyenne([10, 12, 14])"
+    attendu: 12.0
+    tolerance: 0.001
+  - appel: "moyenne([])"
+    attendu: 0
+  - appel: "moyenne([20])"
+    attendu: 20.0
+    tolerance: 0.001
+
+# Affiché progressivement, avant le corrigé complet.
+indices:
+  - Que vaut len(notes) quand la liste est vide ?
+  - sum() additionne les éléments d'une liste.
+
+corrige:
+  - Traiter d'abord le cas de la liste vide pour éviter une division par zéro.
+  - Utiliser sum(notes) pour le total et len(notes) pour l'effectif.
+  - La division `/` renvoie un flottant, ce qui est attendu pour une moyenne.
+
+# Erreurs fréquentes : permettent un message ciblé plutôt qu'un simple "faux".
+erreurs_frequentes:
+  - symptome: ZeroDivisionError
+    message: La liste vide n'est pas traitée avant la division.
