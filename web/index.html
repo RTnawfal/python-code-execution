@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Révision Python</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>&#128218;</text></svg>">
+<style>
+  :root {
+    --fond: #ffffff; --encre: #1a1a1a; --doux: #5c5c5c;
+    --bord: #e0e0e0; --carte: #f7f7f7;
+    --ok: #1a7f37; --ko: #b42318; --accent: #1f4d8f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fond: #16181c; --encre: #ececec; --doux: #9aa0a6;
+      --bord: #2e3238; --carte: #1e2126;
+      --ok: #4ac26b; --ko: #ff7b72; --accent: #7aa7e8;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0 16px 48px;
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--fond); color: var(--encre);
+  }
+  .page { max-width: 720px; margin: 0 auto; }
+  header { padding: 20px 0 12px; border-bottom: 1px solid var(--bord); }
+  h1 { font-size: 19px; margin: 0; }
+  .sous { color: var(--doux); font-size: 13px; margin-top: 4px; }
+  #etat { padding: 14px 0; color: var(--doux); font-size: 14px; }
+  .liste { list-style: none; padding: 0; margin: 16px 0; }
+  .liste li { margin-bottom: 8px; }
+  .liste button {
+    width: 100%; text-align: left; padding: 14px;
+    background: var(--carte); color: var(--encre);
+    border: 1px solid var(--bord); border-radius: 10px;
+    font-size: 15px; cursor: pointer;
+  }
+  .etiq {
+    display: inline-block; font-size: 11px; text-transform: uppercase;
+    letter-spacing: .04em; color: var(--doux); margin-right: 8px;
+  }
+  h2 { font-size: 17px; margin: 20px 0 6px; }
+  pre.enonce {
+    white-space: pre-wrap; background: var(--carte); padding: 14px;
+    border-radius: 10px; border: 1px solid var(--bord); font: inherit;
+  }
+  textarea {
+    width: 100%; min-height: 200px; padding: 12px;
+    font: 14px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: var(--carte); color: var(--encre);
+    border: 1px solid var(--bord); border-radius: 10px; resize: vertical;
+  }
+  button.action {
+    margin-top: 12px; padding: 13px 20px; font-size: 15px; font-weight: 600;
+    background: var(--accent); color: #fff; border: 0; border-radius: 10px;
+    cursor: pointer; width: 100%;
+  }
+  button.action:disabled { opacity: .5; cursor: wait; }
+  button.lien {
+    background: none; border: 0; color: var(--accent); cursor: pointer;
+    padding: 6px 0; font-size: 14px; text-decoration: underline;
+  }
+  .question { margin: 16px 0; }
+  .question p { margin: 0 0 8px; font-weight: 600; }
+  .question label {
+    display: block; padding: 11px 12px; margin-bottom: 6px;
+    border: 1px solid var(--bord); border-radius: 8px; cursor: pointer;
+  }
+  .note { font-size: 20px; font-weight: 700; margin: 18px 0 10px; }
+  .note.reussi { color: var(--ok); }
+  .note.echec { color: var(--ko); }
+  .res { padding: 10px 12px; border-radius: 8px; margin-bottom: 6px;
+         border: 1px solid var(--bord); font-size: 14px; }
+  .res code { font-family: ui-monospace, Menlo, monospace; }
+  .res .detail { color: var(--doux); font-size: 13px; margin-top: 3px; }
+  .res.v { border-left: 4px solid var(--ok); }
+  .res.x { border-left: 4px solid var(--ko); }
+  .message { padding: 12px; border-radius: 8px; background: var(--carte);
+             border-left: 4px solid var(--ko); margin: 12px 0; font-size: 14px; }
+  .brouillon { font-size: 12px; color: var(--doux); margin-top: 8px; }
+  ul.aide { padding-left: 20px; font-size: 14px; color: var(--doux); }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>Révision Python</h1>
+    <div class="sous" id="soustitre">Correction hors ligne dans le navigateur</div>
+  </header>
+  <div id="etat">Chargement de l'interpréteur Python…</div>
+  <main id="vue"></main>
+</div>
+
+<!-- Interpréteur embarqué, jamais chargé depuis un CDN : l'application doit
+     corriger sans réseau. Voir scripts/vendor_pyodide.sh. -->
+<script src="vendor/pyodide/pyodide.js"></script>
+<script>
+const etat = document.getElementById("etat");
+const vue = document.getElementById("vue");
+let corrigerJson = null;
+let modules = [];
+
+// Le moteur de correction est le fichier du dépôt, exécuté tel quel.
+// Seule cette passerelle JSON est propre à l'application.
+const PASSERELLE = `
+import json
+from dataclasses import asdict
+
+def corriger_json(exercice, reponse):
+    resultat = corriger(json.loads(exercice), json.loads(reponse))
+    return json.dumps(asdict(resultat), default=str)
+`;
+
+async function demarrer() {
+  const pyodide = await loadPyodide({ indexURL: "vendor/pyodide/" });
+  const [moteur, contenu] = await Promise.all([
+    fetch("../engine/corrector.py").then(r => r.text()),
+    fetch("data/contenu.json").then(r => r.json()),
+  ]);
+  pyodide.runPython(moteur);
+  pyodide.runPython(PASSERELLE);
+  corrigerJson = pyodide.globals.get("corriger_json");
+  modules = contenu;
+  etat.textContent = `Interpréteur prêt (Pyodide ${pyodide.version}) — aucune connexion nécessaire pour corriger.`;
+  afficherListe();
+}
+
+function afficherListe() {
+  const module = modules[0];
+  document.getElementById("soustitre").textContent =
+    `${module.intitule} — ${module.filiere}, ${module.semestre}`;
+
+  const ul = document.createElement("ul");
+  ul.className = "liste";
+  for (const exercice of module.exercices) {
+    const li = document.createElement("li");
+    const bouton = document.createElement("button");
+    bouton.innerHTML = `<span class="etiq">${exercice.type}</span>`;
+    bouton.appendChild(document.createTextNode(titre(exercice)));
+    bouton.onclick = () => afficherExercice(exercice);
+    li.appendChild(bouton);
+    ul.appendChild(li);
+  }
+  vue.replaceChildren(ul);
+}
+
+function titre(exercice) {
+  if (exercice.type === "qcm") return `${exercice.questions.length} questions — ${exercice.bareme} pts`;
+  return exercice.enonce.split("\n")[0].slice(0, 70);
+}
+
+function retour() {
+  const bouton = document.createElement("button");
+  bouton.className = "lien";
+  bouton.textContent = "← Retour à la liste";
+  bouton.onclick = afficherListe;
+  return bouton;
+}
+
+function afficherExercice(exercice) {
+  vue.replaceChildren(retour());
+
+  const entete = document.createElement("h2");
+  entete.textContent = `${exercice.type.toUpperCase()} — ${exercice.bareme} points`;
+  vue.appendChild(entete);
+
+  const zone = exercice.type === "qcm" ? vueQcm(exercice) : vueCode(exercice);
+  vue.appendChild(zone);
+
+  if (exercice.statut === "brouillon") {
+    const note = document.createElement("div");
+    note.className = "brouillon";
+    note.textContent = "Exercice en brouillon : en attente de validation par l'enseignant.";
+    vue.appendChild(note);
+  }
+}
+
+function vueCode(exercice) {
+  const bloc = document.createElement("div");
+
+  const enonce = document.createElement("pre");
+  enonce.className = "enonce";
+  enonce.textContent = exercice.enonce.trim();
+  bloc.appendChild(enonce);
+
+  const editeur = document.createElement("textarea");
+  editeur.spellcheck = false;
+  editeur.value = (exercice.squelette || "").trim() + "\n";
+  bloc.appendChild(editeur);
+
+  const resultats = document.createElement("div");
+  const bouton = document.createElement("button");
+  bouton.className = "action";
+  bouton.textContent = "Exécuter et corriger";
+  bouton.onclick = () => {
+    bouton.disabled = true;
+    try {
+      const correction = JSON.parse(corrigerJson(JSON.stringify(exercice), JSON.stringify(editeur.value)));
+      afficherCorrection(resultats, exercice, correction);
+    } finally {
+      bouton.disabled = false;
+    }
+  };
+
+  bloc.appendChild(bouton);
+  bloc.appendChild(resultats);
+  return bloc;
+}
+
+function vueQcm(exercice) {
+  const bloc = document.createElement("div");
+  const multiples = exercice.questions.map(q => Array.isArray(q.reponse));
+
+  exercice.questions.forEach((question, i) => {
+    const div = document.createElement("div");
+    div.className = "question";
+    const p = document.createElement("p");
+    p.textContent = `${i + 1}. ${question.enonce}`;
+    div.appendChild(p);
+
+    question.propositions.forEach((proposition, j) => {
+      const label = document.createElement("label");
+      const input = document.createElement("input");
+      input.type = multiples[i] ? "checkbox" : "radio";
+      input.name = `q${i}`;
+      input.value = j;
+      label.appendChild(input);
+      label.appendChild(document.createTextNode(" " + proposition));
+      div.appendChild(label);
+    });
+    bloc.appendChild(div);
+  });
+
+  const resultats = document.createElement("div");
+  const bouton = document.createElement("button");
+  bouton.className = "action";
+  bouton.textContent = "Valider mes réponses";
+  bouton.onclick = () => {
+    const reponses = exercice.questions.map((_, i) => {
+      const coches = [...bloc.querySelectorAll(`input[name="q${i}"]:checked`)].map(e => Number(e.value));
+      return multiples[i] ? coches : (coches.length ? coches[0] : null);
+    });
+    const correction = JSON.parse(corrigerJson(JSON.stringify(exercice), JSON.stringify(reponses)));
+    afficherCorrection(resultats, exercice, correction);
+  };
+
+  bloc.appendChild(bouton);
+  bloc.appendChild(resultats);
+  return bloc;
+}
+
+function afficherCorrection(cible, exercice, correction) {
+  cible.replaceChildren();
+
+  const note = document.createElement("div");
+  note.className = "note " + (correction.reussi ? "reussi" : "echec");
+  note.textContent = `${correction.note} / ${exercice.bareme}`;
+  cible.appendChild(note);
+
+  for (const resultat of correction.resultats) {
+    const div = document.createElement("div");
+    div.className = "res " + (resultat.reussi ? "v" : "x");
+    div.innerHTML = `<code>${echapper(resultat.libelle)}</code>`;
+    if (!resultat.reussi) {
+      const detail = document.createElement("div");
+      detail.className = "detail";
+      detail.textContent = resultat.exception
+        ? `erreur ${resultat.exception}`
+        : `obtenu ${JSON.stringify(resultat.obtenu)} — attendu ${JSON.stringify(resultat.attendu)}`;
+      div.appendChild(detail);
+    }
+    cible.appendChild(div);
+  }
+
+  if (correction.message) {
+    const message = document.createElement("div");
+    message.className = "message";
+    message.textContent = correction.message;
+    cible.appendChild(message);
+  }
+
+  if (!correction.reussi) {
+    cible.appendChild(aide("Voir un indice", exercice.indices));
+    cible.appendChild(aide("Voir le corrigé", exercice.corrige));
+    if (exercice.type === "qcm") {
+      cible.appendChild(aide("Voir les explications", exercice.questions.map(q => q.explication)));
+    }
+  }
+}
+
+function aide(libelle, elements) {
+  const conteneur = document.createElement("div");
+  if (!elements || !elements.length) return conteneur;
+
+  const bouton = document.createElement("button");
+  bouton.className = "lien";
+  bouton.textContent = libelle;
+  bouton.onclick = () => {
+    const ul = document.createElement("ul");
+    ul.className = "aide";
+    for (const element of elements) {
+      const li = document.createElement("li");
+      li.textContent = element;
+      ul.appendChild(li);
+    }
+    conteneur.replaceChildren(ul);
+  };
+  conteneur.appendChild(bouton);
+  return conteneur;
+}
+
+function echapper(texte) {
+  const div = document.createElement("div");
+  div.textContent = texte;
+  return div.innerHTML;
+}
+
+demarrer().catch(err => { etat.textContent = "Erreur : " + err; });
+</script>
+</body>
+</html>

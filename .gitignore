@@ -1,3 +1,10 @@
 __pycache__/
 *.pyc
 .venv/
+
+# Runtime Pyodide (14 Mo), reconstitué par scripts/vendor_pyodide.sh
+web/vendor/
+
+# Généré depuis content/ par engine.exporter : ne pas versionner, pour qu'il
+# ne puisse pas diverger des fichiers YAML qui font foi.
+web/data/

@@ -49,6 +49,23 @@ python3 -m engine.valider content/
 python3 -m unittest discover -p 'test_*.py'
 ```
 
+## Prototype web
+
+`web/index.html` charge l'interpréteur, exécute `engine/corrector.py` tel quel
+et corrige dans le navigateur. Le même fichier servira dans l'application
+mobile via une WebView.
+
+```
+./scripts/vendor_pyodide.sh              # runtime Pyodide (14 Mo), une fois
+python3 -m engine.exporter content/ web/data/contenu.json
+python3 -m http.server 8111              # puis ouvrir /web/
+```
+
+L'interpréteur est embarqué, jamais chargé depuis un CDN : vérifié en coupant
+tout accès réseau hors du serveur local, l'exécution et la correction
+continuent de fonctionner. Les 14 Mo ne sont pas versionnés, le script les
+reconstitue.
+
 Le champ `statut: brouillon` marque un exercice dont la correction mécanique
 passe mais dont la pertinence pédagogique n'a pas été validée par
 l'enseignant. Le validateur les signale ; ils ne sont pas publiables en l'état.
